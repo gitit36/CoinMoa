@@ -40,6 +40,7 @@ from txlog import (
 )
 from upbit_client import UpbitClient
 from bithumb_client import BithumbClient
+from security_guard import SecurityGuard
 import lighter_txlog
 
 logging.basicConfig(level=logging.WARNING)
@@ -311,6 +312,13 @@ def main():
     if args.fx is not None:
         print(f"     환율   : {args.fx:,.1f} ₩/$")
     print(f"     출력   : {args.out}\n")
+
+    # ── API 권한 검증 ─────────────────────────────────────────────────────────
+    guard = SecurityGuard()
+    if not guard.check_all(exchanges):
+        print("\n  ❌ API 권한 검증 실패. 조회 전용 키만 사용하세요.")
+        sys.exit(1)
+    print()
 
     frames: list[pd.DataFrame] = []
     for ex in exchanges:
