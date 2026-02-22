@@ -1,0 +1,10 @@
+item,value_quote
+BeginningEquity(estimated),134.64764082
++ Deposits,0.0
+- Withdrawals,0.0
++ RealizedPnL,0.0
++ UnrealizedPnL,0.0
++ Funding,0.0
+- Fees,0.0
++ TokenSalePnL,18227.606894
+= EndingEquity,0.0

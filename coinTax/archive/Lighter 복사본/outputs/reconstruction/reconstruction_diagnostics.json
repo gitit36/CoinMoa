@@ -1,0 +1,143 @@
+{
+  "deposit_verification": {
+    "total_deposits": 32.348385,
+    "total_withdrawals": 0.0,
+    "net_deposits": 32.348385,
+    "earliest_timestamp": "2025-04-16T07:59:42Z",
+    "has_approximately_600": false,
+    "approximate_600_band": [
+      525.0,
+      675.0
+    ]
+  },
+  "inference_info": {
+    "inferred_initial_deposit": 25222.13237731,
+    "injected_inferred_deposit": false,
+    "earliest_equity": 0.007106,
+    "reconciliation_estimate": 25222.13237731,
+    "exposure_proxy": 24685.863345963953,
+    "ending_equity": 0.007106,
+    "realized_pnl": 0.0,
+    "unrealized_pnl": 0.0,
+    "fees_total": 25254.47365631,
+    "funding_total": 0.0,
+    "total_deposits": 32.348385,
+    "total_withdrawals": 0.0,
+    "net_deposits": 32.348385,
+    "earliest_timestamp": "2025-04-16T07:59:42Z"
+  },
+  "endpoint_statuses": [
+    {
+      "name": "deposit/history",
+      "success": true,
+      "records": 0,
+      "error": ""
+    },
+    {
+      "name": "withdraw/history",
+      "success": true,
+      "records": 0,
+      "error": ""
+    },
+    {
+      "name": "l1Metadata",
+      "success": false,
+      "records": 0,
+      "error": "Request failed after retries: https://mainnet.zklighter.elliot.ai/api/v1/l1Metadata; last_error=HTTP 401: {\"code\":20013,\"message\":\"invalid auth: invalid auth string\"}"
+    },
+    {
+      "name": "explorer.logs[6183]",
+      "success": true,
+      "records": 663,
+      "error": ""
+    },
+    {
+      "name": "explorer.logs[0x6DbAF85a8Bb5753EB39CD5c4653BEE164f211987]",
+      "success": true,
+      "records": 663,
+      "error": ""
+    },
+    {
+      "name": "trades",
+      "success": true,
+      "records": 1577,
+      "error": ""
+    },
+    {
+      "name": "accountTrades",
+      "success": false,
+      "records": 0,
+      "error": "Request failed after retries: https://mainnet.zklighter.elliot.ai/api/v1/accountTrades; last_error=HTTP 403: "
+    },
+    {
+      "name": "explorer.trade_logs[6183]",
+      "success": true,
+      "records": 627,
+      "error": ""
+    },
+    {
+      "name": "explorer.trade_logs[0x6DbAF85a8Bb5753EB39CD5c4653BEE164f211987]",
+      "success": true,
+      "records": 627,
+      "error": ""
+    },
+    {
+      "name": "account",
+      "success": true,
+      "records": 1,
+      "error": ""
+    },
+    {
+      "name": "account/balanceHistory",
+      "success": false,
+      "records": 0,
+      "error": "Request failed after retries: https://mainnet.zklighter.elliot.ai/api/v1/account/balanceHistory; last_error=HTTP 403: "
+    },
+    {
+      "name": "account/history",
+      "success": false,
+      "records": 0,
+      "error": "Request failed after retries: https://mainnet.zklighter.elliot.ai/api/v1/account/history; last_error=HTTP 403: "
+    },
+    {
+      "name": "balance/history",
+      "success": false,
+      "records": 0,
+      "error": "Request failed after retries: https://mainnet.zklighter.elliot.ai/api/v1/balance/history; last_error=HTTP 403: "
+    },
+    {
+      "name": "explorer.airdrop[6183]",
+      "success": true,
+      "records": 0,
+      "error": ""
+    },
+    {
+      "name": "explorer.airdrop[0x6DbAF85a8Bb5753EB39CD5c4653BEE164f211987]",
+      "success": true,
+      "records": 0,
+      "error": ""
+    }
+  ],
+  "profit_snapshot": {
+    "deposits_quote": 32.348385,
+    "withdrawals_quote": 0.0,
+    "net_deposits_quote": 32.348385,
+    "realized_pnl_quote": 0.0,
+    "unrealized_pnl_quote": 0.0,
+    "fees_quote": 25254.47365631,
+    "funding_quote": 0.0,
+    "airdrop_tokens_received": 0.0,
+    "token_sold_qty": 1377.98,
+    "token_sell_vwap": 2.356573687571663,
+    "token_sell_proceeds_quote": 3247.3114100000003,
+    "token_sell_pnl_quote": 3247.3114100000003,
+    "ending_equity_quote": 0.007106
+  },
+  "record_counts": {
+    "transfers": 36,
+    "trades": 2204,
+    "balances": 1,
+    "airdrops": 0,
+    "reconstructed_rows": 2240
+  }
+}
