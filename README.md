@@ -1,4 +1,4 @@
-# coinTax
+# CoinMoa
 
 여러 거래소(Upbit, Bithumb, Lighter 등)의 거래 내역을 한방에 긁어서 하나의 CSV로 뽑아주는 도구
 
