@@ -206,7 +206,8 @@ class UpbitClient:
                     "error_name": e.get("name"),
                     "error_message": e.get("message"),
                 }
-                logger.warning("API error: %s", error_info)
+                level = logging.DEBUG if resp.status_code == 404 else logging.WARNING
+                logger.log(level, "API error: %s", error_info)
                 return error_info
             return {"status_code": resp.status_code, "body": ej}
         except ValueError:

@@ -122,6 +122,9 @@ def fetch_deposits_in_range(client, exchange_key, dt_start, dt_end):
         page = 1
         while True:
             data = client.get(path, {"limit": 100, "page": page, "order_by": "desc"})
+            if isinstance(data, dict) and "status_code" in data:
+                # API error (e.g. 404 for unsupported path) — skip this path
+                break
             if not isinstance(data, list) or not data:
                 break
             stopped_early = False
@@ -154,6 +157,8 @@ def fetch_withdrawals_in_range(client, exchange_key, dt_start, dt_end):
         page = 1
         while True:
             data = client.get(path, {"limit": 100, "page": page, "order_by": "desc"})
+            if isinstance(data, dict) and "status_code" in data:
+                break
             if not isinstance(data, list) or not data:
                 break
             stopped_early = False
