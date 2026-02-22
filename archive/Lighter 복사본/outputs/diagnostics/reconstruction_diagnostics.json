@@ -1,0 +1,25 @@
+{
+  "trades_count": 1577,
+  "deposits_count": 47,
+  "withdrawals_count": 9,
+  "transfers_count": 9,
+  "rows_exported": 1642,
+  "earliest": "2025-04-16T07:59:20Z",
+  "latest": "2026-01-12T10:54:38Z",
+  "deposit_total_usd": 727.903067,
+  "withdraw_total_usd": 18382.85,
+  "pair_top": {
+    "BTC": 831,
+    "ETH": 366,
+    "HYPE": 90,
+    "USDC": 65,
+    "TRUMP": 56,
+    "BNB": 46,
+    "SOL": 21,
+    "KAITO": 19,
+    "CRV": 18,
+    "PENDLE": 18,
+    "PENGU": 16,
+    "LIT/USDC": 16
+  }
+}

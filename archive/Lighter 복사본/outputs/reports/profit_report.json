@@ -1,0 +1,20 @@
+{
+  "net_deposits_quote": 0.0,
+  "deposits_quote": 0.0,
+  "withdrawals_quote": 0.0,
+  "realized_pnl_quote": 0.0,
+  "unrealized_pnl_quote": 0.0,
+  "fees_quote": 0.0,
+  "funding_quote": 0.0,
+  "airdrop_tokens_received": 0.0,
+  "token_sell_qty": 7735.8,
+  "token_sell_vwap": 2.3562665650611443,
+  "token_sell_proceeds_quote": 18227.606894,
+  "token_sale_pnl_quote": 18227.606894,
+  "beginning_equity_estimate_quote": 134.64764082,
+  "ending_equity_quote": 0.0,
+  "total_profit_quote": -134.64764082,
+  "initial_capital_method": "exposure-based-heuristic",
+  "initial_capital_confidence": "low",
+  "caveats": "Historical balance snapshots may be unavailable via API. Beginning equity is estimated from reconciliation; token cost basis assumed zero for airdrop-derived sales."
+}
