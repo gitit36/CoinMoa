@@ -467,7 +467,7 @@ const Dashboard: React.FC<DashboardProps> = ({ summary, transactions, insights, 
                 )}
               </div>
             ) : (
-              <div className="grid h-full gap-4 md:grid-cols-[minmax(0,1fr)_170px]">
+              <div className="grid items-start gap-4 md:grid-cols-[minmax(0,1fr)_170px]">
                 <div className="h-[280px]">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
@@ -481,7 +481,10 @@ const Dashboard: React.FC<DashboardProps> = ({ summary, transactions, insights, 
                           border: '1px solid rgba(222,231,241,0.9)',
                           boxShadow: '0 18px 34px rgba(15,23,42,0.10)',
                         }}
-                        formatter={(value) => formatCompactCurrency(value as number, displayCurrency)}
+                        formatter={(value, _name, entry) => [
+                          formatCompactCurrency(value as number, displayCurrency),
+                          (entry as any).payload?.symbol ?? '',
+                        ]}
                       />
                     </PieChart>
                   </ResponsiveContainer>

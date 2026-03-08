@@ -152,7 +152,7 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#eef2f6] pb-20 md:pb-0">
       <div className="flex min-h-screen flex-col md:flex-row">
-      <aside className="hidden md:flex w-[288px] shrink-0 flex-col bg-[#0f172a] p-6 text-white">
+      <aside className="hidden md:flex w-[288px] shrink-0 flex-col bg-[#0f172a] p-6 text-white sticky top-0 h-screen overflow-y-auto">
         <div className="mb-10 flex items-center gap-3 px-2">
           <div className="rounded-[12px] bg-[#2463eb] p-2 text-white shadow-[0_10px_24px_rgba(36,99,235,0.25)]">
             <ShieldCheck size={24} />
