@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-unified_txlog.py — 통합 거래 이력 (Upbit · Bithumb · Lighter)
+unified_txlog.py — 통합 거래 이력 (Upbit · Bithumb · Lighter · EdgeX)
 
 단일 CSV 로 모든 거래소의 입금/출금/매수/매도/청산/이체 이벤트를 시간순으로 정렬·병합합니다.
 
@@ -18,6 +18,8 @@ Required .env per exchange:
   Bithumb : BITHUMB_ACCESS_KEY, BITHUMB_SECRET_KEY
   Lighter : LIGHTER_RO_TOKEN, LIGHTER_ACCOUNT_INDEX
             (optional: LIGHTER_L1_ADDRESS, LIGHTER_BASE_URL, LIGHTER_MARKET_ID, FX_KRW_PER_USD)
+  EdgeX   : EDGEX_ACCOUNT_ID, EDGEX_STARK_PRIVATE_KEY
+            (optional: EDGEX_BASE_URL, FX_KRW_PER_USD)
 """
 
 from __future__ import annotations
@@ -25,6 +27,7 @@ from __future__ import annotations
 import sys
 import argparse
 import logging
+import asyncio
 import pandas as pd
 from datetime import datetime, timedelta, timezone
 from typing import Optional
@@ -42,6 +45,7 @@ from upbit_client import UpbitClient
 from bithumb_client import BithumbClient
 from security_guard import SecurityGuard
 import lighter_txlog
+import edgex_txlog
 
 logging.basicConfig(level=logging.WARNING)
 
@@ -258,24 +262,67 @@ def get_lighter_events(
     return out[CANONICAL_COLS].reset_index(drop=True)
 
 
+def get_edgex_events(
+    start_date: str, end_date: str, fx_override: Optional[float] = None,
+) -> pd.DataFrame:
+    """EdgeX 이벤트 수집 → canonical DataFrame."""
+    if fx_override is not None:
+        edgex_txlog.FX_KRW_PER_USD_RAW = str(fx_override)
+
+    print("  [EdgeX] 타임라인 수집 중...")
+    timeline = asyncio.run(edgex_txlog.build_edgex_timeline(max_pages=50, limit=100))
+
+    if timeline.empty:
+        return _empty_canonical()
+
+    dt_start = pd.Timestamp(start_date, tz="Asia/Seoul")
+    dt_end = pd.Timestamp(end_date, tz="Asia/Seoul") + pd.Timedelta(days=1)
+
+    if "_sort_ts" in timeline.columns:
+        valid = timeline["_sort_ts"].notna()
+        in_range = (timeline["_sort_ts"] >= dt_start) & (timeline["_sort_ts"] < dt_end)
+        timeline = timeline.loc[valid & in_range].copy()
+
+    if timeline.empty:
+        return _empty_canonical()
+
+    out = pd.DataFrame(index=timeline.index)
+    out["ts_kst"] = timeline["_sort_ts"]
+    out["일시"] = timeline["일시"]
+    out["거래소"] = "EdgeX"
+    out["유형"] = timeline["유형"]
+    out["페어"] = timeline["페어"]
+    out["통화"] = timeline["통화"]
+    out["수량"] = None
+    out["가격"] = timeline["가격"]
+    out["원화가치"] = timeline["원화가치"]
+    out["적용환율"] = timeline["적용환율"]
+    out["수수료"] = timeline["수수료"] if "수수료" in timeline.columns else None
+    out["txid_or_uuid"] = ""
+
+    return out[CANONICAL_COLS].reset_index(drop=True)
+
+
 # ── CLI ───────────────────────────────────────────────────────────────────────
 
 _EXCHANGE_HANDLERS = {
     "upbit": get_upbit_events,
     "bithumb": get_bithumb_events,
     "lighter": get_lighter_events,
+    "edgex": get_edgex_events,
 }
 
 _ENV_HINTS = {
     "upbit": "UPBIT_ACCESS_KEY, UPBIT_SECRET_KEY",
     "bithumb": "BITHUMB_ACCESS_KEY, BITHUMB_SECRET_KEY",
     "lighter": "LIGHTER_RO_TOKEN, LIGHTER_ACCOUNT_INDEX",
+    "edgex": "EDGEX_ACCOUNT_ID, EDGEX_STARK_PRIVATE_KEY",
 }
 
 
 def main():
     parser = argparse.ArgumentParser(
-        description="통합 거래 이력: Upbit · Bithumb · Lighter → 단일 CSV",
+        description="통합 거래 이력: Upbit · Bithumb · Lighter · EdgeX → 단일 CSV",
     )
     parser.add_argument("start_date", help="시작일 (YYYY-MM-DD)")
     parser.add_argument("end_date", help="종료일 (YYYY-MM-DD)")
@@ -285,7 +332,7 @@ def main():
     )
     parser.add_argument(
         "--exchanges", default="upbit,bithumb,lighter",
-        help="거래소 목록 (comma-separated, 기본: upbit,bithumb,lighter)",
+        help="거래소 목록 (comma-separated, 예: upbit,bithumb,lighter,edgex)",
     )
     parser.add_argument(
         "--fx", type=float, default=None,

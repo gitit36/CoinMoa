@@ -1,6 +1,6 @@
 # CoinMoa
 
-여러 거래소(Upbit, Bithumb, Lighter 등)의 거래 내역을 한방에 긁어서 하나의 CSV로 뽑아주는 도구
+여러 거래소(Upbit, Bithumb, Lighter, EdgeX 등)의 거래 내역을 한방에 긁어서 하나의 CSV로 뽑아주는 도구
 
 세금 신고할 때 거래소마다 따로 CSV 다운받고 엑셀에서 합치고... 이런 짓 안 해도 됨.
 커맨드 한 줄이면 전부 합쳐진 파일이 나옴.
@@ -12,11 +12,13 @@
 이걸 하나하나 모으려면 귀찮고 빠뜨리기도 쉬움.
 
 이 도구는:
-- **Upbit**, **Bithumb**, **Lighter** 세 거래소의 내역을 API로 자동 수집함
+- **Upbit**, **Bithumb**, **Lighter**, **EdgeX** 거래소의 내역을 API로 자동 수집함
 - 전부 같은 포맷(일시, 거래소, 유형, 금액, 수수료 등)으로 통일함
 - 시간순으로 정렬해서 **CSV 파일 하나**로 저장함
 
 세금 계산이든 포트폴리오 정리든, 이 CSV 하나면 충분함.
+
+세무 기능 확장 설계안은 [`TAX_DESIGN.md`](./TAX_DESIGN.md)에 따로 정리해뒀음.
 
 
 ## 시작 전 준비
@@ -37,6 +39,7 @@ python3 --version
 
 ```bash
 pip install python-dotenv requests pandas PyJWT
+pip install edgex-python-sdk   # EdgeX를 쓸 경우만 추가
 ```
 
 이미 설치돼 있으면 넘어가도 됨.
@@ -60,6 +63,11 @@ BITHUMB_SECRET_KEY=여기에_빗썸_시크릿키
 LIGHTER_RO_TOKEN=ro:여기에_라이터_토큰
 LIGHTER_ACCOUNT_INDEX=12345
 LIGHTER_L1_ADDRESS=0xabc...
+
+# EdgeX
+EDGEX_ACCOUNT_ID=12345
+EDGEX_STARK_PRIVATE_KEY=0xabc...
+# EDGEX_BASE_URL=https://pro.edgex.exchange
 ```
 
 **주의**: `.env` 파일에는 실제 API 키가 들어가니까 절대 깃허브 같은 데 올리면 안 됨.
@@ -81,7 +89,7 @@ python unified_txlog.py <시작날짜> <끝날짜>
 python unified_txlog.py 2024-01-01 2024-12-31
 ```
 
-이러면 세 거래소 전부에서 2024년 거래 내역을 가져와서 `unified_timeline.csv`라는 파일로 저장됨.
+이러면 기본값으로 Upbit, Bithumb, Lighter 세 거래소에서 2024년 거래 내역을 가져와서 `unified_timeline.csv`라는 파일로 저장됨.
 
 ### 예시 모음
 
@@ -95,6 +103,11 @@ python unified_txlog.py 2024-01-01 2024-12-31 --exchanges upbit,lighter
 Bithumb만:
 ```bash
 python unified_txlog.py 2025-01-01 2025-06-30 --exchanges bithumb
+```
+
+EdgeX만:
+```bash
+python unified_txlog.py 2025-01-01 2025-06-30 --exchanges edgex
 ```
 
 **파일 이름을 바꾸고 싶을 때:**
@@ -116,15 +129,21 @@ python unified_txlog.py 2024-01-01 2024-12-31 --fx 1350
 python unified_txlog.py 2024-06-01 2024-12-31 --exchanges upbit,lighter --fx 1400 --out 하반기.csv
 ```
 
+**EdgeX 전용 타임라인만 바로 뽑고 싶을 때:**
+
+```bash
+python edgex_txlog.py --pages 50 --limit 100 --out edgex_timeline.csv
+```
+
 ### 옵션 요약
 
 | 옵션 | 기본값 | 설명 |
 |---|---|---|
 | `시작날짜` | (필수) | 조회 시작일. `YYYY-MM-DD` |
 | `끝날짜` | (필수) | 조회 종료일. `YYYY-MM-DD` |
-| `--exchanges` | `upbit,bithumb,lighter` | 조회할 거래소. 콤마로 구분 |
+| `--exchanges` | `upbit,bithumb,lighter` | 조회할 거래소. `edgex`도 가능 |
 | `--out` | `unified_timeline.csv` | 저장할 파일 이름 |
-| `--fx` | `1300` | USD→KRW 환율 (Lighter용) |
+| `--fx` | `1300` | USD→KRW 환율 (Lighter/EdgeX용) |
 
 
 ## 출력 파일은 이렇게 생겼음
@@ -135,7 +154,7 @@ CSV를 열어보면 이런 컬럼들이 있음:
 |---|---|---|
 | `ts_kst` | 시각 (정렬용) | `2024-03-15 14:30:00+09:00` |
 | `일시` | 보기 좋은 시각 | `2024-03-15-14-30-00` |
-| `거래소` | 어디서 발생 | `Upbit` / `Bithumb` / `Lighter` |
+| `거래소` | 어디서 발생 | `Upbit` / `Bithumb` / `Lighter` / `EdgeX` |
 | `유형` | 뭘 했는지 | `매수` / `매도` / `입금` / `출금` / `청산` / `이체` |
 | `페어` | 거래쌍 | `KRW-BTC`, `BTC-USD` |
 | `통화` | 코인 종류 | `BTC`, `ETH` |
@@ -154,6 +173,8 @@ coinTax/
 ├── .env                  ← API 키 (깃에 올리면 안 됨)
 ├── unified_txlog.py      ← 메인 실행 파일. 이것만 실행하면 됨
 ├── lighter_txlog.py      ← Lighter 거래소 전용 수집기
+├── edgex_txlog.py        ← EdgeX 거래소 전용 수집기
+├── TAX_DESIGN.md         ← 세무/과세 기능 확장 설계 문서
 ├── txlog.py              ← Upbit/Bithumb 거래 조회 유틸
 ├── upbit_client.py       ← Upbit API 클라이언트
 ├── bithumb_client.py     ← Bithumb API 클라이언트
@@ -166,7 +187,7 @@ coinTax/
     └── test_lighter_sj*.csv
 ```
 
-핵심 파일은 루트에 있는 `.py` 파일 5개임. `archive/`는 이전에 쓰던 참고 코드나 테스트 파일들을 모아놓은 곳이라 실행에는 관계없음.
+핵심 파일은 루트에 있는 `.py` 파일 6개임. `archive/`는 이전에 쓰던 참고 코드나 테스트 파일들을 모아놓은 곳이라 실행에는 관계없음.
 
 
 ## 새 거래소 추가하려면
@@ -191,3 +212,22 @@ coinTax/
 
 **라이브러리 에러:**
 → `pip install python-dotenv requests pandas PyJWT` 다시 실행.
+→ EdgeX라면 `pip install edgex-python-sdk`도 설치.
+
+
+## 프론트 실행
+
+UI 프로토타입만 따로 보려면:
+
+```bash
+npm install
+npm run dev
+```
+
+Vite dev server는 `http://127.0.0.1:3000` 에서 뜸.
+
+AI 분석을 시험할 거면 `.env`에 아래 값을 추가:
+
+```bash
+GEMINI_API_KEY=your_key_here
+```

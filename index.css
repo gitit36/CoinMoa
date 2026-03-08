@@ -1,0 +1,92 @@
+:root {
+  --cm-bg: #eef2f6;
+  --cm-surface: rgba(255, 255, 255, 0.94);
+  --cm-surface-muted: #f6f8fb;
+  --cm-text: #191f28;
+  --cm-subtext: #7f8b99;
+  --cm-line: #e5e8eb;
+  --cm-line-soft: #edf2f7;
+  --cm-primary: #2463eb;
+  --cm-primary-soft: #eaf1ff;
+  --cm-danger: #ff5c39;
+  --cm-shadow: 0 20px 40px rgba(15, 23, 42, 0.05);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--cm-bg);
+}
+
+body {
+  margin: 0;
+  font-family: "Inter", "Noto Sans KR", sans-serif;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(238, 242, 246, 0.92)),
+    var(--cm-bg);
+  color: var(--cm-text);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+a {
+  color: inherit;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.surface-card {
+  border: 1px solid rgba(229, 232, 235, 0.92);
+  background: var(--cm-surface);
+  box-shadow: var(--cm-shadow);
+}
+
+.surface-muted {
+  background: var(--cm-surface-muted);
+  border: 1px solid var(--cm-line-soft);
+}
+
+.pill-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border-radius: 999px;
+  padding: 0.35rem 0.75rem;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  color: var(--cm-subtext);
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(229, 232, 235, 0.9);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.03);
+}
+
+.currency-nowrap {
+  white-space: nowrap;
+  word-break: keep-all;
+  font-variant-numeric: tabular-nums;
+}
+
+.currency-fit {
+  min-width: 0;
+  white-space: nowrap;
+  word-break: keep-all;
+  font-variant-numeric: tabular-nums;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(49, 130, 247, 0.1);
+  border-radius: 10px;
+}

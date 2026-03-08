@@ -1,0 +1,5 @@
+{
+  "name": "K-Crypto Tax Guard",
+  "description": "A sophisticated crypto tax reporting and portfolio tracking tool designed specifically for Korean investors, featuring CEX API integration, KRW on-ramp tracking, and AI-powered tax optimization insights.",
+  "requestFramePermissions": []
+}

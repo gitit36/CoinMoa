@@ -1,0 +1,44 @@
+{
+  "XRP": {
+    "display_name_ko": "엑스알피",
+    "aliases": ["리플"],
+    "upbit": {
+      "korean_name": "엑스알피"
+    },
+    "bithumb": {
+      "korean_name": "엑스알피"
+    }
+  },
+  "USDT": {
+    "display_name_ko": "테더",
+    "aliases": ["usdt", "테더usd"]
+  },
+  "BTC": {
+    "display_name_ko": "비트코인"
+  },
+  "ETH": {
+    "display_name_ko": "이더리움"
+  },
+  "DOGE": {
+    "display_name_ko": "도지코인"
+  },
+  "JUP": {
+    "display_name_ko": "주피터",
+    "aliases": ["Jupiter AG"],
+    "cmc_id": 29210,
+    "cmc_slug": "jupiter-ag",
+    "cmc_name": "Jupiter"
+  },
+  "PEPE": {
+    "display_name_ko": "페페",
+    "cmc_id": 24478,
+    "cmc_slug": "pepe",
+    "cmc_name": "Pepe"
+  },
+  "SUI": {
+    "display_name_ko": "수이",
+    "cmc_id": 20947,
+    "cmc_slug": "sui",
+    "cmc_name": "Sui"
+  }
+}

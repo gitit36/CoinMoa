@@ -15,9 +15,12 @@ Usage:
     guard.check_all(["upbit", "bithumb"])  # raises SystemExit on failure
 """
 
+from __future__ import annotations
+
 import os
 import re
 import logging
+import asyncio
 import requests
 from dotenv import load_dotenv
 
@@ -140,6 +143,43 @@ class SecurityGuard:
             logger.error("Lighter 토큰 검증 API 호출 실패: %s", e)
             return False
 
+    def check_edgex(self) -> bool:
+        """
+        EdgeX 자격 증명 검증.
+
+        EdgeX 문서상 private API 는 account_id + stark_private_key 서명을 사용합니다.
+        별도 read-only 키 모델이 명확하지 않아 위험 권한 판별까지는 하지 않고,
+        최소한 계정 조회가 성공하는지만 확인합니다.
+        """
+        account_id = os.getenv("EDGEX_ACCOUNT_ID", "").strip()
+        stark_private_key = os.getenv("EDGEX_STARK_PRIVATE_KEY", "").strip()
+        base_url = os.getenv("EDGEX_BASE_URL", "https://pro.edgex.exchange").strip()
+
+        if not account_id or not stark_private_key:
+            logger.error("EDGEX_ACCOUNT_ID 또는 EDGEX_STARK_PRIVATE_KEY 가 설정되지 않았습니다.")
+            return False
+
+        try:
+            from edgex_sdk import Client
+        except ImportError:
+            logger.error("EdgeX 검증에는 edgex-python-sdk 가 필요합니다.")
+            return False
+
+        async def _probe() -> bool:
+            async with Client(
+                base_url=base_url,
+                account_id=int(account_id),
+                stark_private_key=stark_private_key,
+            ) as client:
+                resp = await client.get_account_asset()
+                return bool(resp and resp.get("code") == "SUCCESS")
+
+        try:
+            return asyncio.run(_probe())
+        except Exception as e:
+            logger.error("EdgeX 자격 증명 검증 실패: %s", e)
+            return False
+
     # ── Batch check ───────────────────────────────────────────
 
     def check_all(self, exchanges: list[str]) -> bool:
@@ -167,6 +207,8 @@ class SecurityGuard:
                 results[ex] = self.check_bithumb(client)
             elif ex == "lighter":
                 results[ex] = self.check_lighter()
+            elif ex == "edgex":
+                results[ex] = self.check_edgex()
             else:
                 logger.warning("알 수 없는 거래소: %s (건너뜀)", ex)
                 continue
@@ -177,6 +219,13 @@ class SecurityGuard:
             if ok:
                 print(f"  🔒 {ex.capitalize()} API 권한 검증 통과 ✅")
             else:
+                if ex == "edgex":
+                    print(
+                        "  🚨 EdgeX 자격 증명 검증 실패 ❌"
+                        "\n     EDGEX_ACCOUNT_ID / EDGEX_STARK_PRIVATE_KEY / edgex-python-sdk 설치 상태를 확인하세요."
+                    )
+                    all_ok = False
+                    continue
                 print(
                     f"  🚨 {ex.capitalize()} API 권한 검증 실패 ❌"
                     f" — 위험한 권한(주문/출금)이 감지되었습니다."
